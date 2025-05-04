@@ -3,14 +3,14 @@
 -- We need to split those values so that each row contains only a single product per order
 
 -- Step 1: Create a new normalized table
-CREATE TABLE ProductDetail_1NF (
+CREATE TABLE ProductDetail (
     OrderID INT,
     CustomerName VARCHAR(100),
     Product VARCHAR(100)
 );
 
 -- Step 2: Insert the decomposed data (manually splitting comma-separated products into individual rows)
-INSERT INTO ProductDetail_1NF (OrderID, CustomerName, Product)
+INSERT INTO ProductDetail (OrderID, CustomerName, Product)
 VALUES 
     (101, 'John Doe', 'Laptop'),
     (101, 'John Doe', 'Mouse'),
@@ -34,23 +34,28 @@ CREATE TABLE Orders (
     CustomerName VARCHAR(100)
 );
 
--- Step 2: Create the 'OrderItems' table where each product and quantity is linked to an OrderID
-CREATE TABLE OrderItems (
-    OrderID INT,
-    Product VARCHAR(100),
-    Quantity INT,
-    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
-);
 
--- Step 3: Insert data into the 'Orders' table (one entry per order)
+
+-- Step 2: Insert data into the 'Orders' table (one entry per order)
 INSERT INTO Orders (OrderID, CustomerName)
 VALUES 
     (101, 'John Doe'),
     (102, 'Jane Smith'),
     (103, 'Emily Clark');
 
+-- Step 3: Create the 'Product' table with OrderID as the primary key
+
+CREATE TABLE Product (
+    OrderID INT,
+    Product VARCHAR(100),
+    Quantity INT,
+    PRIMARY KEY (OrderID, Product),
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+);
+
+
 -- Step 4: Insert data into the 'OrderItems' table (normalized, product-level info)
-INSERT INTO OrderItems (OrderID, Product, Quantity)
+INSERT INTO Product (OrderID, Product, Quantity)
 VALUES 
     (101, 'Laptop', 2),
     (101, 'Mouse', 1),
